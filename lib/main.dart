@@ -115,7 +115,7 @@ class _NewsListPageState extends State<NewsListPage> {
                             child: Image(
                               fit: BoxFit.fitHeight,
                               image: NetworkImage(
-                                  article.urlToImage),
+                                  article.urlToImage) ?? AssetImage('assets/image-placeholder.jpg'),
                             ),
                           ),
                         ],
@@ -183,23 +183,23 @@ class _NewsDetailsPageState extends State<NewsDetailsPage> {
           onPressed: () {Navigator.pop(context);},
           icon: Icon(
             Icons.arrow_back,
-            color: Colors.blueGrey,
+            color: Colors.grey,
           ),
         ),
         actions: <Widget>[
           Icon(
             Icons.share,
-            color: Colors.blueGrey,
+            color: Colors.grey,
           ),
           SizedBox(
             width: 20,
           ),
           Icon(
             Icons.more_vert,
-            color: Colors.blueGrey,
+            color: Colors.grey,
           ),
           SizedBox(
-            width: 7,
+            width: 10,
           ),
         ],
       ),
