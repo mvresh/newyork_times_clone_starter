@@ -56,7 +56,7 @@ class _NewsListPageState extends State<NewsListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.white,centerTitle: true,
         title: Text(
           'MVR Times',
           style: TextStyle(
