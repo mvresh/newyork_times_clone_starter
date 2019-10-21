@@ -23,6 +23,9 @@ flutter:
 
   uses-material-design: true
   fonts:
+    - family: Noto
+      fonts:
+        - asset: assets/NotoSerif-Regular.ttf
     - family: OldLondon
       fonts:
         - asset: assets/OldLondon.ttf
