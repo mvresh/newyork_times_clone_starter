@@ -9,9 +9,12 @@ void main() => runApp(MaterialApp(
       home: LoadingPage(),
     ));
 
-
-
-Map<String, dynamic> headlinesData;
+Map<String, dynamic> headlinesDataBBC;
+Map<String, dynamic> headlinesDataARS;
+Map<String, dynamic> headlinesDataCNBC;
+Map<String, dynamic> headlinesDataALJ;
+Map<String, dynamic> headlinesDataCNN;
+Map<String, dynamic> headlinesDataBND;
 
 class LoadingPage extends StatefulWidget {
   @override
@@ -26,65 +29,130 @@ class _LoadingPageState extends State<LoadingPage> {
   }
 
   void getHeadlines() async {
-    NetworkHelper helper = NetworkHelper(
+    NetworkHelper BBC_helper = NetworkHelper(
         'https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=d73aacc5bf514debb3377163552e3d98');
-    headlinesData = await helper.getTopHeadlines();
-    Navigator.pushReplacement((context),
-        MaterialPageRoute(builder: (context) => NewsListPage()));
+    NetworkHelper ARS_helper = NetworkHelper(
+        'https://newsapi.org/v2/top-headlines?sources=ars-technica&apiKey=d73aacc5bf514debb3377163552e3d98');
+    NetworkHelper CNBC_helper = NetworkHelper(
+        'https://newsapi.org/v2/top-headlines?sources=cnbc&apiKey=d73aacc5bf514debb3377163552e3d98');
+    NetworkHelper ALJ_helper = NetworkHelper(
+        'https://newsapi.org/v2/top-headlines?sources=al-jazeera-english&apiKey=d73aacc5bf514debb3377163552e3d98');
+    NetworkHelper CNN_helper = NetworkHelper(
+        'https://newsapi.org/v2/top-headlines?sources=cnn&apiKey=d73aacc5bf514debb3377163552e3d98');
+    NetworkHelper BND_helper = NetworkHelper(
+        'https://newsapi.org/v2/top-headlines?sources=business-insider&apiKey=d73aacc5bf514debb3377163552e3d98');
+    headlinesDataBBC = await BBC_helper.getTopHeadlines();
+    headlinesDataARS = await ARS_helper.getTopHeadlines();
+    headlinesDataCNBC = await CNBC_helper.getTopHeadlines();
+    headlinesDataALJ = await ALJ_helper.getTopHeadlines();
+    headlinesDataCNN = await CNN_helper.getTopHeadlines();
+    headlinesDataBND = await BND_helper.getTopHeadlines();
+    Navigator.pushReplacement(
+        (context), MaterialPageRoute(builder: (context) => NewsListPage()));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: Colors.white,
+    return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
-        child: SizedBox(width: 50,height: 50,child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green),strokeWidth: 5,)),
+        child: SizedBox(
+            width: 50,
+            height: 50,
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+              strokeWidth: 5,
+            )),
       ),
     );
   }
 }
 
 class NewsListPage extends StatefulWidget {
-
   @override
   _NewsListPageState createState() => _NewsListPageState();
 }
 
-ArticleList articleList = ArticleList.fromJson(headlinesData);
+ArticleList articleListBBC = ArticleList.fromJson(headlinesDataBBC);
+ArticleList articleListARS = ArticleList.fromJson(headlinesDataARS);
+ArticleList articleListCNBC = ArticleList.fromJson(headlinesDataCNBC);
+ArticleList articleListALJ = ArticleList.fromJson(headlinesDataALJ);
+ArticleList articleListCNN = ArticleList.fromJson(headlinesDataCNN);
+ArticleList articleListBND = ArticleList.fromJson(headlinesDataBND);
 
-class _NewsListPageState extends State<NewsListPage> {
-Future<Null> updatingNewsList()async{
-  await Future.delayed(Duration(seconds:2));
+class _NewsListPageState extends State<NewsListPage>
+    with TickerProviderStateMixin {
+  Future<Null> updatingNewsList() async {
+    await Future.delayed(Duration(seconds: 2));
     NetworkHelper helper = NetworkHelper(
-        'https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=d73aacc5bf514debb3377163552e3d98');
-    headlinesData = await helper.getTopHeadlines();
-  setState(() {
-
-  });
- print('updating news...');
-}
+        'https://newsapi.org/v2/top-headlines?country=in&apiKey=d73aacc5bf514debb3377163552e3d98');
+    headlinesDataBBC = await helper.getTopHeadlines();
+    setState(() {});
+    print('updating news...');
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,centerTitle: true,
-        title: Text(
-          'MVR Times',
-          style: TextStyle(
-              fontSize: 32, color: Colors.black, fontFamily: 'OldLondon'),
-        ),
-      ),
-      body: Container(
-        child: RefreshIndicator(
-          onRefresh: updatingNewsList,
-          child: ListView.builder(
-            scrollDirection: Axis.vertical,
-            itemCount: articleList.totalResults,
-            shrinkWrap: true,
-            itemBuilder: (BuildContext context, int index) {
-              var article = articleList.articles[index];
-              return GestureDetector(
-                onTap: (){
+    return DefaultTabController(
+      length: 6,
+      child: Scaffold(
+          appBar: AppBar(
+            bottom: TabBar(
+              isScrollable: true,
+              indicatorColor: Colors.black45,
+              tabs: <Widget>[
+                Text('BBC',
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w300)),
+                Text('Ars Technica',
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w300)),
+                Text('CNBC',
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w300)),
+                Text('Al Jazeera',
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w300)),
+                Text('CNN',
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w300)),
+                Text('Business Insider',
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w300)),
+              ],
+            ),
+            backgroundColor: Colors.white,
+            centerTitle: true,
+            title: Text(
+              'MVR Times',
+              style: TextStyle(
+                  fontSize: 32, color: Colors.black, fontFamily: 'OldLondon'),
+            ),
+          ),
+          body: TabBarView(children: [
+            Container(
+              child: RefreshIndicator(
+                onRefresh: updatingNewsList,
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: articleListBBC.totalResults,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index) {
+                    var article = articleListBBC.articles[index];
+                    return GestureDetector(
+                      onTap: () {
 //                _launchURL(url) async {
 //
 //                  if (await canLaunch(url)) {
@@ -94,86 +162,653 @@ Future<Null> updatingNewsList()async{
 //                  }
 //                }
 //                _launchURL(article.url);
-                  Navigator.push((context),
-                      MaterialPageRoute(builder: (context) => NewsDetailsPage(article)));
-                },
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(article.title,
-                            maxLines: 2,
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontFamily: 'Noto',
-                                fontWeight: FontWeight.bold, fontSize: 18)),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.max,
-                          children: <Widget>[
-                            Expanded(
-                              flex: 2,
-                              child: Text(
-                                article.description,
-                                maxLines: 4,
-                                style: TextStyle(fontFamily: 'Noto',fontSize: 15,)
+                        Navigator.push(
+                            (context),
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    NewsDetailsPage(article)));
+                      },
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(article.title,
+                                  maxLines: 2,
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontFamily: 'Noto',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18)),
+                              SizedBox(
+                                height: 10,
                               ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Hero(
-                                tag:article.urlToImage,
-                                child: Image(
-                                  fit: BoxFit.fitHeight,
-                                  image: NetworkImage(
-                                      article.urlToImage) ?? AssetImage('assets/image-placeholder.jpg'),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Expanded(
-                              flex: 5,
-                              child: Container(
-                                alignment: Alignment.topLeft,
-                                child: Text('${article.source.name}     ${DateTime.now().difference(DateTime.parse(article.publishedAt)).inHours} hours ago',
-                                    style: TextStyle(color: Colors.grey)),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.max,
                                 children: <Widget>[
-                                  Icon(Icons.share),
-                                  Icon(Icons.bookmark_border)
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(article.description,
+                                        maxLines: 4,
+                                        style: TextStyle(
+                                          fontFamily: 'Noto',
+                                          fontSize: 15,
+                                        )),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Hero(
+                                      tag: article.urlToImage,
+                                      child: Image(
+                                        fit: BoxFit.fitHeight,
+                                        image: NetworkImage(
+                                                article.urlToImage) ??
+                                            AssetImage(
+                                                'assets/image-placeholder.jpg'),
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
-                            ),
-                          ],
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 5,
+                                    child: Container(
+                                      alignment: Alignment.topLeft,
+                                      child: Text(
+                                          '${article.source.name}     ${DateTime.now().difference(DateTime.parse(article.publishedAt)).inHours} hours ago',
+                                          style: TextStyle(color: Colors.grey)),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Icon(Icons.share),
+                                        Icon(Icons.bookmark_border)
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                            ],
+                          ),
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-        ),
-      ),
+              ),
+            ),
+            Container(
+              child: RefreshIndicator(
+                onRefresh: updatingNewsList,
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: articleListARS.totalResults,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index) {
+                    var article = articleListARS.articles[index];
+                    return GestureDetector(
+                      onTap: () {
+//                _launchURL(url) async {
+//
+//                  if (await canLaunch(url)) {
+//                    await launch(url,forceWebView: true);
+//                  } else {
+//                    throw 'Could not launch ${url}';
+//                  }
+//                }
+//                _launchURL(article.url);
+                        Navigator.push(
+                            (context),
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    NewsDetailsPage(article)));
+                      },
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(article.title,
+                                  maxLines: 2,
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontFamily: 'Noto',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18)),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.max,
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(article.description,
+                                        maxLines: 4,
+                                        style: TextStyle(
+                                          fontFamily: 'Noto',
+                                          fontSize: 15,
+                                        )),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Hero(
+                                      tag: article.urlToImage,
+                                      child: Image(
+                                        fit: BoxFit.fitHeight,
+                                        image: NetworkImage(
+                                                article.urlToImage) ??
+                                            AssetImage(
+                                                'assets/image-placeholder.jpg'),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 5,
+                                    child: Container(
+                                      alignment: Alignment.topLeft,
+                                      child: Text(
+                                          '${article.source.name}     ${DateTime.now().difference(DateTime.parse(article.publishedAt)).inHours} hours ago',
+                                          style: TextStyle(color: Colors.grey)),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Icon(Icons.share),
+                                        Icon(Icons.bookmark_border)
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Container(
+              child: RefreshIndicator(
+                onRefresh: updatingNewsList,
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: articleListCNBC.totalResults,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index) {
+                    var article = articleListCNBC.articles[index];
+                    return GestureDetector(
+                      onTap: () {
+//                _launchURL(url) async {
+//
+//                  if (await canLaunch(url)) {
+//                    await launch(url,forceWebView: true);
+//                  } else {
+//                    throw 'Could not launch ${url}';
+//                  }
+//                }
+//                _launchURL(article.url);
+                        Navigator.push(
+                            (context),
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    NewsDetailsPage(article)));
+                      },
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(article.title,
+                                  maxLines: 2,
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontFamily: 'Noto',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18)),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.max,
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(article.description,
+                                        maxLines: 4,
+                                        style: TextStyle(
+                                          fontFamily: 'Noto',
+                                          fontSize: 15,
+                                        )),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Hero(
+                                      tag: article.urlToImage,
+                                      child: Image(
+                                        fit: BoxFit.fitHeight,
+                                        image: NetworkImage(
+                                                article.urlToImage) ??
+                                            AssetImage(
+                                                'assets/image-placeholder.jpg'),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 5,
+                                    child: Container(
+                                      alignment: Alignment.topLeft,
+                                      child: Text(
+                                          '${article.source.name}     ${DateTime.now().difference(DateTime.parse(article.publishedAt)).inHours} hours ago',
+                                          style: TextStyle(color: Colors.grey)),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Icon(Icons.share),
+                                        Icon(Icons.bookmark_border)
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Container(
+              child: RefreshIndicator(
+                onRefresh: updatingNewsList,
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: articleListALJ.totalResults,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index) {
+                    var article = articleListALJ.articles[index];
+                    return GestureDetector(
+                      onTap: () {
+//                _launchURL(url) async {
+//
+//                  if (await canLaunch(url)) {
+//                    await launch(url,forceWebView: true);
+//                  } else {
+//                    throw 'Could not launch ${url}';
+//                  }
+//                }
+//                _launchURL(article.url);
+                        Navigator.push(
+                            (context),
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    NewsDetailsPage(article)));
+                      },
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(article.title,
+                                  maxLines: 2,
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontFamily: 'Noto',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18)),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.max,
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(article.description,
+                                        maxLines: 4,
+                                        style: TextStyle(
+                                          fontFamily: 'Noto',
+                                          fontSize: 15,
+                                        )),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Hero(
+                                      tag: article.urlToImage,
+                                      child: Image(
+                                        fit: BoxFit.fitHeight,
+                                        image: NetworkImage(
+                                                article.urlToImage) ??
+                                            AssetImage(
+                                                'assets/image-placeholder.jpg'),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 5,
+                                    child: Container(
+                                      alignment: Alignment.topLeft,
+                                      child: Text(
+                                          '${article.source.name}     ${DateTime.now().difference(DateTime.parse(article.publishedAt)).inHours} hours ago',
+                                          style: TextStyle(color: Colors.grey)),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Icon(Icons.share),
+                                        Icon(Icons.bookmark_border)
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Container(
+              child: RefreshIndicator(
+                onRefresh: updatingNewsList,
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: articleListCNN.totalResults,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index) {
+                    var article = articleListCNN.articles[index];
+                    return GestureDetector(
+                      onTap: () {
+//                _launchURL(url) async {
+//
+//                  if (await canLaunch(url)) {
+//                    await launch(url,forceWebView: true);
+//                  } else {
+//                    throw 'Could not launch ${url}';
+//                  }
+//                }
+//                _launchURL(article.url);
+                        Navigator.push(
+                            (context),
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    NewsDetailsPage(article)));
+                      },
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(article.title,
+                                  maxLines: 2,
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontFamily: 'Noto',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18)),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.max,
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(article.description,
+                                        maxLines: 4,
+                                        style: TextStyle(
+                                          fontFamily: 'Noto',
+                                          fontSize: 15,
+                                        )),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Hero(
+                                      tag: article.urlToImage,
+                                      child: Image(
+                                        fit: BoxFit.fitHeight,
+                                        image: NetworkImage(
+                                                article.urlToImage) ??
+                                            AssetImage(
+                                                'assets/image-placeholder.jpg'),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 5,
+                                    child: Container(
+                                      alignment: Alignment.topLeft,
+                                      child: Text(
+                                          '${article.source.name}     ${DateTime.now().difference(DateTime.parse(article.publishedAt)).inHours} hours ago',
+                                          style: TextStyle(color: Colors.grey)),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Icon(Icons.share),
+                                        Icon(Icons.bookmark_border)
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Container(
+              child: RefreshIndicator(
+                onRefresh: updatingNewsList,
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: articleListBND.totalResults,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index) {
+                    var article = articleListBND.articles[index];
+                    return GestureDetector(
+                      onTap: () {
+//                _launchURL(url) async {
+//
+//                  if (await canLaunch(url)) {
+//                    await launch(url,forceWebView: true);
+//                  } else {
+//                    throw 'Could not launch ${url}';
+//                  }
+//                }
+//                _launchURL(article.url);
+                        Navigator.push(
+                            (context),
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    NewsDetailsPage(article)));
+                      },
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(article.title,
+                                  maxLines: 2,
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontFamily: 'Noto',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18)),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.max,
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(article.description,
+                                        maxLines: 4,
+                                        style: TextStyle(
+                                          fontFamily: 'Noto',
+                                          fontSize: 15,
+                                        )),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Hero(
+                                      tag: article.urlToImage,
+                                      child: Image(
+                                        fit: BoxFit.fitHeight,
+                                        image: NetworkImage(
+                                                article.urlToImage) ??
+                                            AssetImage(
+                                                'assets/image-placeholder.jpg'),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 5,
+                                    child: Container(
+                                      alignment: Alignment.topLeft,
+                                      child: Text(
+                                          '${article.source.name}     ${DateTime.now().difference(DateTime.parse(article.publishedAt)).inHours} hours ago',
+                                          style: TextStyle(color: Colors.grey)),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Icon(Icons.share),
+                                        Icon(Icons.bookmark_border)
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ])),
     );
   }
 }
@@ -194,10 +829,13 @@ class _NewsDetailsPageState extends State<NewsDetailsPage> {
         backgroundColor: Colors.white,
         title: Text(
           'BBC News',
-          style: TextStyle(color: Colors.grey, fontSize: 25,fontFamily: 'Noto'),
+          style:
+              TextStyle(color: Colors.grey, fontSize: 25, fontFamily: 'Noto'),
         ),
         leading: IconButton(
-          onPressed: () {Navigator.pop(context);},
+          onPressed: () {
+            Navigator.pop(context);
+          },
           icon: Icon(
             Icons.arrow_back,
             color: Colors.grey,
@@ -231,58 +869,64 @@ class _NewsDetailsPageState extends State<NewsDetailsPage> {
                   textAlign: TextAlign.left,
                   style: TextStyle(
                       color: Colors.black,
-                      fontSize: 35,fontFamily: 'Noto',fontWeight: FontWeight.bold,fontStyle: FontStyle.italic)),
+                      fontSize: 35,
+                      fontFamily: 'Noto',
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic)),
             ),
 //            description
             Padding(
               padding: EdgeInsets.all(10),
               child: Text(widget.article.description,
-                  style: TextStyle(fontSize: 20,fontFamily: 'Noto')),
-              ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: GestureDetector(
-                onTap: (){
-                  Navigator.push((context),
-                      MaterialPageRoute(builder: (context) => ImageScreen(widget.article.urlToImage)));
-                },
-                child: Hero(
-                  tag: widget.article.urlToImage,
-                  child: Image(
-                    fit: BoxFit.fitHeight,
-                    image: NetworkImage(
-                        widget.article.urlToImage),
-                  ),
-                ),
-              )
+                  style: TextStyle(fontSize: 20, fontFamily: 'Noto')),
             ),
+            Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        (context),
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ImageScreen(widget.article.urlToImage)));
+                  },
+                  child: Hero(
+                    tag: widget.article.urlToImage,
+                    child: Image(
+                      fit: BoxFit.fitHeight,
+                      image: NetworkImage(widget.article.urlToImage),
+                    ),
+                  ),
+                )),
 //            image caption
             Padding(
               padding: EdgeInsets.all(10),
               child: Text(
                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                style: TextStyle(
-                    color: Colors.grey,fontFamily: 'Noto'),
+                style: TextStyle(color: Colors.grey, fontFamily: 'Noto'),
               ),
             ),
 //            source name
             Padding(
-              padding: EdgeInsets.fromLTRB(10,10,0,5),
+              padding: EdgeInsets.fromLTRB(10, 10, 0, 5),
               child: Text("By ${widget.article.source.name}",
                   style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold,fontSize: 18)),
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18)),
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(10,10,0,5),
-              child: Text("${DateTime.parse(widget.article.publishedAt).day} - ${DateTime.parse(widget.article.publishedAt).month} - ${DateTime.parse(widget.article.publishedAt).year}",
+              padding: EdgeInsets.fromLTRB(10, 10, 0, 5),
+              child: Text(
+                  "${DateTime.parse(widget.article.publishedAt).day} - ${DateTime.parse(widget.article.publishedAt).month} - ${DateTime.parse(widget.article.publishedAt).year}",
                   style: TextStyle(
-                      color: Colors.red,fontFamily: 'Noto',fontSize: 18)),
+                      color: Colors.red, fontFamily: 'Noto', fontSize: 18)),
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(10,10,10,0),
+              padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
               child: Text("${widget.article.content}",
-                  style: TextStyle(fontSize: 20,
-                      color: Colors.black,fontFamily: 'Noto')),
+                  style: TextStyle(
+                      fontSize: 20, color: Colors.black, fontFamily: 'Noto')),
             )
           ],
         ),
@@ -290,7 +934,6 @@ class _NewsDetailsPageState extends State<NewsDetailsPage> {
     );
   }
 }
-
 
 class ImageScreen extends StatefulWidget {
   final String imageURL;
@@ -307,10 +950,8 @@ class _ImageScreenState extends State<ImageScreen> {
       child: Scaffold(
         body: PhotoView(
           imageProvider: NetworkImage(widget.imageURL),
-
         ),
       ),
     );
   }
 }
-
