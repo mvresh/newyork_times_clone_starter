@@ -13,7 +13,7 @@ Map<String, dynamic> headlinesDataBBC;
 Map<String, dynamic> headlinesDataARS;
 Map<String, dynamic> headlinesDataCNBC;
 Map<String, dynamic> headlinesDataALJ;
-Map<String, dynamic> headlinesDataCNN;
+Map<String, dynamic> headlinesDataENG;
 Map<String, dynamic> headlinesDataBND;
 
 class LoadingPage extends StatefulWidget {
@@ -37,15 +37,15 @@ class _LoadingPageState extends State<LoadingPage> {
         'https://newsapi.org/v2/top-headlines?sources=cnbc&apiKey=d73aacc5bf514debb3377163552e3d98');
     NetworkHelper ALJ_helper = NetworkHelper(
         'https://newsapi.org/v2/top-headlines?sources=al-jazeera-english&apiKey=d73aacc5bf514debb3377163552e3d98');
-    NetworkHelper CNN_helper = NetworkHelper(
-        'https://newsapi.org/v2/top-headlines?sources=cnn&apiKey=d73aacc5bf514debb3377163552e3d98');
+    NetworkHelper ENG_helper = NetworkHelper(
+        'https://newsapi.org/v2/top-headlines?sources=engadget&apiKey=d73aacc5bf514debb3377163552e3d98');
     NetworkHelper BND_helper = NetworkHelper(
         'https://newsapi.org/v2/top-headlines?sources=business-insider&apiKey=d73aacc5bf514debb3377163552e3d98');
     headlinesDataBBC = await BBC_helper.getTopHeadlines();
     headlinesDataARS = await ARS_helper.getTopHeadlines();
     headlinesDataCNBC = await CNBC_helper.getTopHeadlines();
     headlinesDataALJ = await ALJ_helper.getTopHeadlines();
-    headlinesDataCNN = await CNN_helper.getTopHeadlines();
+    headlinesDataENG = await ENG_helper.getTopHeadlines();
     headlinesDataBND = await BND_helper.getTopHeadlines();
     Navigator.pushReplacement(
         (context), MaterialPageRoute(builder: (context) => NewsListPage()));
@@ -77,16 +77,31 @@ ArticleList articleListBBC = ArticleList.fromJson(headlinesDataBBC);
 ArticleList articleListARS = ArticleList.fromJson(headlinesDataARS);
 ArticleList articleListCNBC = ArticleList.fromJson(headlinesDataCNBC);
 ArticleList articleListALJ = ArticleList.fromJson(headlinesDataALJ);
-ArticleList articleListCNN = ArticleList.fromJson(headlinesDataCNN);
+ArticleList articleListENG = ArticleList.fromJson(headlinesDataENG);
 ArticleList articleListBND = ArticleList.fromJson(headlinesDataBND);
 
 class _NewsListPageState extends State<NewsListPage>
     with TickerProviderStateMixin {
   Future<Null> updatingNewsList() async {
     await Future.delayed(Duration(seconds: 2));
-    NetworkHelper helper = NetworkHelper(
-        'https://newsapi.org/v2/top-headlines?country=in&apiKey=d73aacc5bf514debb3377163552e3d98');
-    headlinesDataBBC = await helper.getTopHeadlines();
+    NetworkHelper BBC_helper = NetworkHelper(
+        'https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=d73aacc5bf514debb3377163552e3d98');
+    NetworkHelper ARS_helper = NetworkHelper(
+        'https://newsapi.org/v2/top-headlines?sources=ars-technica&apiKey=d73aacc5bf514debb3377163552e3d98');
+    NetworkHelper CNBC_helper = NetworkHelper(
+        'https://newsapi.org/v2/top-headlines?sources=cnbc&apiKey=d73aacc5bf514debb3377163552e3d98');
+    NetworkHelper ALJ_helper = NetworkHelper(
+        'https://newsapi.org/v2/top-headlines?sources=al-jazeera-english&apiKey=d73aacc5bf514debb3377163552e3d98');
+    NetworkHelper ENG_helper = NetworkHelper(
+        'https://newsapi.org/v2/top-headlines?sources=engadget&apiKey=d73aacc5bf514debb3377163552e3d98');
+    NetworkHelper BND_helper = NetworkHelper(
+        'https://newsapi.org/v2/top-headlines?sources=business-insider&apiKey=d73aacc5bf514debb3377163552e3d98');
+    headlinesDataBBC = await BBC_helper.getTopHeadlines();
+    headlinesDataARS = await ARS_helper.getTopHeadlines();
+    headlinesDataCNBC = await CNBC_helper.getTopHeadlines();
+    headlinesDataALJ = await ALJ_helper.getTopHeadlines();
+    headlinesDataENG = await ENG_helper.getTopHeadlines();
+    headlinesDataBND = await BND_helper.getTopHeadlines();
     setState(() {});
     print('updating news...');
   }
@@ -121,7 +136,7 @@ class _NewsListPageState extends State<NewsListPage>
                         fontSize: 20,
                         color: Colors.black,
                         fontWeight: FontWeight.w300)),
-                Text('CNN',
+                Text('Engadget',
                     style: TextStyle(
                         fontSize: 20,
                         color: Colors.black,
@@ -135,6 +150,7 @@ class _NewsListPageState extends State<NewsListPage>
             ),
             backgroundColor: Colors.white,
             centerTitle: true,
+            leading: IconButton(icon: Icon(Icons.menu)),
             title: Text(
               'MVR Times',
               style: TextStyle(
@@ -142,674 +158,130 @@ class _NewsListPageState extends State<NewsListPage>
             ),
           ),
           body: TabBarView(children: [
-            Container(
-              child: RefreshIndicator(
-                onRefresh: updatingNewsList,
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: articleListBBC.totalResults,
-                  shrinkWrap: true,
-                  itemBuilder: (BuildContext context, int index) {
-                    var article = articleListBBC.articles[index];
-                    return GestureDetector(
-                      onTap: () {
-//                _launchURL(url) async {
-//
-//                  if (await canLaunch(url)) {
-//                    await launch(url,forceWebView: true);
-//                  } else {
-//                    throw 'Could not launch ${url}';
-//                  }
-//                }
-//                _launchURL(article.url);
-                        Navigator.push(
-                            (context),
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    NewsDetailsPage(article)));
-                      },
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(article.title,
-                                  maxLines: 2,
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                      fontFamily: 'Noto',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18)),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.max,
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(article.description,
-                                        maxLines: 4,
-                                        style: TextStyle(
-                                          fontFamily: 'Noto',
-                                          fontSize: 15,
-                                        )),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Hero(
-                                      tag: article.urlToImage,
-                                      child: Image(
-                                        fit: BoxFit.fitHeight,
-                                        image: NetworkImage(
-                                                article.urlToImage) ??
-                                            AssetImage(
-                                                'assets/image-placeholder.jpg'),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 5,
-                                    child: Container(
-                                      alignment: Alignment.topLeft,
-                                      child: Text(
-                                          '${article.source.name}     ${DateTime.now().difference(DateTime.parse(article.publishedAt)).inHours} hours ago',
-                                          style: TextStyle(color: Colors.grey)),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Icon(Icons.share),
-                                        Icon(Icons.bookmark_border)
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            Container(
-              child: RefreshIndicator(
-                onRefresh: updatingNewsList,
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: articleListARS.totalResults,
-                  shrinkWrap: true,
-                  itemBuilder: (BuildContext context, int index) {
-                    var article = articleListARS.articles[index];
-                    return GestureDetector(
-                      onTap: () {
-//                _launchURL(url) async {
-//
-//                  if (await canLaunch(url)) {
-//                    await launch(url,forceWebView: true);
-//                  } else {
-//                    throw 'Could not launch ${url}';
-//                  }
-//                }
-//                _launchURL(article.url);
-                        Navigator.push(
-                            (context),
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    NewsDetailsPage(article)));
-                      },
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(article.title,
-                                  maxLines: 2,
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                      fontFamily: 'Noto',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18)),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.max,
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(article.description,
-                                        maxLines: 4,
-                                        style: TextStyle(
-                                          fontFamily: 'Noto',
-                                          fontSize: 15,
-                                        )),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Hero(
-                                      tag: article.urlToImage,
-                                      child: Image(
-                                        fit: BoxFit.fitHeight,
-                                        image: NetworkImage(
-                                                article.urlToImage) ??
-                                            AssetImage(
-                                                'assets/image-placeholder.jpg'),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 5,
-                                    child: Container(
-                                      alignment: Alignment.topLeft,
-                                      child: Text(
-                                          '${article.source.name}     ${DateTime.now().difference(DateTime.parse(article.publishedAt)).inHours} hours ago',
-                                          style: TextStyle(color: Colors.grey)),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Icon(Icons.share),
-                                        Icon(Icons.bookmark_border)
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            Container(
-              child: RefreshIndicator(
-                onRefresh: updatingNewsList,
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: articleListCNBC.totalResults,
-                  shrinkWrap: true,
-                  itemBuilder: (BuildContext context, int index) {
-                    var article = articleListCNBC.articles[index];
-                    return GestureDetector(
-                      onTap: () {
-//                _launchURL(url) async {
-//
-//                  if (await canLaunch(url)) {
-//                    await launch(url,forceWebView: true);
-//                  } else {
-//                    throw 'Could not launch ${url}';
-//                  }
-//                }
-//                _launchURL(article.url);
-                        Navigator.push(
-                            (context),
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    NewsDetailsPage(article)));
-                      },
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(article.title,
-                                  maxLines: 2,
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                      fontFamily: 'Noto',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18)),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.max,
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(article.description,
-                                        maxLines: 4,
-                                        style: TextStyle(
-                                          fontFamily: 'Noto',
-                                          fontSize: 15,
-                                        )),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Hero(
-                                      tag: article.urlToImage,
-                                      child: Image(
-                                        fit: BoxFit.fitHeight,
-                                        image: NetworkImage(
-                                                article.urlToImage) ??
-                                            AssetImage(
-                                                'assets/image-placeholder.jpg'),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 5,
-                                    child: Container(
-                                      alignment: Alignment.topLeft,
-                                      child: Text(
-                                          '${article.source.name}     ${DateTime.now().difference(DateTime.parse(article.publishedAt)).inHours} hours ago',
-                                          style: TextStyle(color: Colors.grey)),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Icon(Icons.share),
-                                        Icon(Icons.bookmark_border)
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            Container(
-              child: RefreshIndicator(
-                onRefresh: updatingNewsList,
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: articleListALJ.totalResults,
-                  shrinkWrap: true,
-                  itemBuilder: (BuildContext context, int index) {
-                    var article = articleListALJ.articles[index];
-                    return GestureDetector(
-                      onTap: () {
-//                _launchURL(url) async {
-//
-//                  if (await canLaunch(url)) {
-//                    await launch(url,forceWebView: true);
-//                  } else {
-//                    throw 'Could not launch ${url}';
-//                  }
-//                }
-//                _launchURL(article.url);
-                        Navigator.push(
-                            (context),
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    NewsDetailsPage(article)));
-                      },
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(article.title,
-                                  maxLines: 2,
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                      fontFamily: 'Noto',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18)),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.max,
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(article.description,
-                                        maxLines: 4,
-                                        style: TextStyle(
-                                          fontFamily: 'Noto',
-                                          fontSize: 15,
-                                        )),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Hero(
-                                      tag: article.urlToImage,
-                                      child: Image(
-                                        fit: BoxFit.fitHeight,
-                                        image: NetworkImage(
-                                                article.urlToImage) ??
-                                            AssetImage(
-                                                'assets/image-placeholder.jpg'),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 5,
-                                    child: Container(
-                                      alignment: Alignment.topLeft,
-                                      child: Text(
-                                          '${article.source.name}     ${DateTime.now().difference(DateTime.parse(article.publishedAt)).inHours} hours ago',
-                                          style: TextStyle(color: Colors.grey)),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Icon(Icons.share),
-                                        Icon(Icons.bookmark_border)
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            Container(
-              child: RefreshIndicator(
-                onRefresh: updatingNewsList,
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: articleListCNN.totalResults,
-                  shrinkWrap: true,
-                  itemBuilder: (BuildContext context, int index) {
-                    var article = articleListCNN.articles[index];
-                    return GestureDetector(
-                      onTap: () {
-//                _launchURL(url) async {
-//
-//                  if (await canLaunch(url)) {
-//                    await launch(url,forceWebView: true);
-//                  } else {
-//                    throw 'Could not launch ${url}';
-//                  }
-//                }
-//                _launchURL(article.url);
-                        Navigator.push(
-                            (context),
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    NewsDetailsPage(article)));
-                      },
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(article.title,
-                                  maxLines: 2,
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                      fontFamily: 'Noto',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18)),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.max,
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(article.description,
-                                        maxLines: 4,
-                                        style: TextStyle(
-                                          fontFamily: 'Noto',
-                                          fontSize: 15,
-                                        )),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Hero(
-                                      tag: article.urlToImage,
-                                      child: Image(
-                                        fit: BoxFit.fitHeight,
-                                        image: NetworkImage(
-                                                article.urlToImage) ??
-                                            AssetImage(
-                                                'assets/image-placeholder.jpg'),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 5,
-                                    child: Container(
-                                      alignment: Alignment.topLeft,
-                                      child: Text(
-                                          '${article.source.name}     ${DateTime.now().difference(DateTime.parse(article.publishedAt)).inHours} hours ago',
-                                          style: TextStyle(color: Colors.grey)),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Icon(Icons.share),
-                                        Icon(Icons.bookmark_border)
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            Container(
-              child: RefreshIndicator(
-                onRefresh: updatingNewsList,
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: articleListBND.totalResults,
-                  shrinkWrap: true,
-                  itemBuilder: (BuildContext context, int index) {
-                    var article = articleListBND.articles[index];
-                    return GestureDetector(
-                      onTap: () {
-//                _launchURL(url) async {
-//
-//                  if (await canLaunch(url)) {
-//                    await launch(url,forceWebView: true);
-//                  } else {
-//                    throw 'Could not launch ${url}';
-//                  }
-//                }
-//                _launchURL(article.url);
-                        Navigator.push(
-                            (context),
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    NewsDetailsPage(article)));
-                      },
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(article.title,
-                                  maxLines: 2,
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                      fontFamily: 'Noto',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18)),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.max,
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(article.description,
-                                        maxLines: 4,
-                                        style: TextStyle(
-                                          fontFamily: 'Noto',
-                                          fontSize: 15,
-                                        )),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Hero(
-                                      tag: article.urlToImage,
-                                      child: Image(
-                                        fit: BoxFit.fitHeight,
-                                        image: NetworkImage(
-                                                article.urlToImage) ??
-                                            AssetImage(
-                                                'assets/image-placeholder.jpg'),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 5,
-                                    child: Container(
-                                      alignment: Alignment.topLeft,
-                                      child: Text(
-                                          '${article.source.name}     ${DateTime.now().difference(DateTime.parse(article.publishedAt)).inHours} hours ago',
-                                          style: TextStyle(color: Colors.grey)),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Icon(Icons.share),
-                                        Icon(Icons.bookmark_border)
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
+            NewsListContainer(articleListBBC),
+            NewsListContainer(articleListARS),
+            NewsListContainer(articleListCNBC),
+            NewsListContainer(articleListALJ),
+            NewsListContainer(articleListENG),
+            NewsListContainer(articleListBND),
           ])),
     );
+  }
+
+  Container NewsListContainer(ArticleList sourceArticleList) {
+    return Container(
+            child: RefreshIndicator(
+              onRefresh: updatingNewsList,
+              child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: sourceArticleList.totalResults,
+                shrinkWrap: true,
+                itemBuilder: (BuildContext context, int index) {
+                  var article = sourceArticleList.articles[index];
+                  return GestureDetector(
+                    onTap: () {
+//                _launchURL(url) async {
+//
+//                  if (await canLaunch(url)) {
+//                    await launch(url,forceWebView: true);
+//                  } else {
+//                    throw 'Could not launch ${url}';
+//                  }
+//                }
+//                _launchURL(article.url);
+                      Navigator.push(
+                          (context),
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  NewsDetailsPage(article)));
+                    },
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(article.title ?? 'MISSING',
+                                maxLines: 2,
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                    fontFamily: 'Noto',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18)),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.max,
+                              children: <Widget>[
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(article.description,
+                                      maxLines: 4,
+                                      style: TextStyle(
+                                        fontFamily: 'Noto',
+                                        fontSize: 15,
+                                      )),
+                                ),
+                                SizedBox(width: 5,),
+                                Expanded(
+                                  flex: 1,
+                                  child: Hero(
+                                    tag: article.urlToImage,
+                                    child: Image(
+                                      fit: BoxFit.fitHeight,
+                                      image: NetworkImage(
+                                              article.urlToImage) ??
+                                          AssetImage(
+                                              'assets/image-placeholder.jpg'),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Expanded(
+                                  flex: 4,
+                                  child: Container(
+                                    alignment: Alignment.topLeft,
+                                    child: Text(
+                                        '${article.source.name}     ${DateTime.now().difference(DateTime.parse(article.publishedAt)).inHours} hours ago',
+                                        style: TextStyle(color: Colors.grey)),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Icon(Icons.share),
+                                      SizedBox(width: 10,),
+                                      Icon(Icons.bookmark_border)
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
   }
 }
 
@@ -828,7 +300,7 @@ class _NewsDetailsPageState extends State<NewsDetailsPage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text(
-          'BBC News',
+          widget.article.source.name,
           style:
               TextStyle(color: Colors.grey, fontSize: 25, fontFamily: 'Noto'),
         ),
