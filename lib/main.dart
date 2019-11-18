@@ -4,6 +4,7 @@ import 'network_helper.dart';
 import 'article_list.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:share/share.dart';
 
 void main() => runApp(MaterialApp(
       home: LoadingPage(),
@@ -69,6 +70,7 @@ class _LoadingPageState extends State<LoadingPage> {
 }
 
 class NewsListPage extends StatefulWidget {
+
   @override
   _NewsListPageState createState() => _NewsListPageState();
 }
@@ -81,7 +83,8 @@ ArticleList articleListENG = ArticleList.fromJson(headlinesDataENG);
 ArticleList articleListBND = ArticleList.fromJson(headlinesDataBND);
 
 class _NewsListPageState extends State<NewsListPage>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin,AutomaticKeepAliveClientMixin {
+
   Future<Null> updatingNewsList() async {
     await Future.delayed(Duration(seconds: 2));
     NetworkHelper BBC_helper = NetworkHelper(
@@ -105,7 +108,6 @@ class _NewsListPageState extends State<NewsListPage>
     setState(() {});
     print('updating news...');
   }
-
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -113,6 +115,7 @@ class _NewsListPageState extends State<NewsListPage>
       child: Scaffold(
           appBar: AppBar(
             bottom: TabBar(
+              labelPadding: EdgeInsets.fromLTRB(7, 0, 7, 12),
               isScrollable: true,
               indicatorColor: Colors.black45,
               tabs: <Widget>[
@@ -169,6 +172,7 @@ class _NewsListPageState extends State<NewsListPage>
   }
 
   Container NewsListContainer(ArticleList sourceArticleList) {
+
     return Container(
             child: RefreshIndicator(
               onRefresh: updatingNewsList,
@@ -178,6 +182,13 @@ class _NewsListPageState extends State<NewsListPage>
                 shrinkWrap: true,
                 itemBuilder: (BuildContext context, int index) {
                   var article = sourceArticleList.articles[index];
+                  dynamic timeDifference;
+                  try{
+                    timeDifference = DateTime.now().difference(DateTime.parse(article.publishedAt)).inHours;
+                  }on FormatException catch(e){
+                    print('error caught: $e');
+                    timeDifference = 'few ';
+                  }
                   return GestureDetector(
                     onTap: () {
 //                _launchURL(url) async {
@@ -228,6 +239,8 @@ class _NewsListPageState extends State<NewsListPage>
                                 Expanded(
                                   flex: 1,
                                   child: Hero(
+                                    createRectTween: (Rect r1, Rect r2) =>
+                                        RectTween(begin: r1, end: r2),
                                     tag: article.urlToImage,
                                     child: Image(
                                       fit: BoxFit.fitHeight,
@@ -252,7 +265,7 @@ class _NewsListPageState extends State<NewsListPage>
                                   child: Container(
                                     alignment: Alignment.topLeft,
                                     child: Text(
-                                        '${article.source.name}     ${DateTime.now().difference(DateTime.parse(article.publishedAt)).inHours} hours ago',
+                                        '${article.source.name}     $timeDifference hours ago',
                                         style: TextStyle(color: Colors.grey)),
                                   ),
                                 ),
@@ -262,9 +275,9 @@ class _NewsListPageState extends State<NewsListPage>
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
-                                      Icon(Icons.share),
-                                      SizedBox(width: 10,),
-                                      Icon(Icons.bookmark_border)
+                                      IconButton(icon: Icon(Icons.share),onPressed: (){
+                                        Share.share('${article.title} -- ${article.url}');
+                                      },),
                                     ],
                                   ),
                                 ),
@@ -283,6 +296,10 @@ class _NewsListPageState extends State<NewsListPage>
             ),
           );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }
 
 class NewsDetailsPage extends StatefulWidget {
@@ -296,6 +313,13 @@ class NewsDetailsPage extends StatefulWidget {
 class _NewsDetailsPageState extends State<NewsDetailsPage> {
   @override
   Widget build(BuildContext context) {
+    dynamic timeDifference;
+    try{
+      timeDifference = DateTime.now().difference(DateTime.parse(widget.article.publishedAt)).inHours;
+    }on FormatException catch(e){
+      print('error caught: $e');
+      timeDifference = 'few ';
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -314,10 +338,9 @@ class _NewsDetailsPageState extends State<NewsDetailsPage> {
           ),
         ),
         actions: <Widget>[
-          Icon(
-            Icons.share,
-            color: Colors.grey,
-          ),
+          IconButton(icon: Icon(Icons.share),onPressed: (){
+            Share.share('${widget.article.title} -- ${widget.article.url}');
+          },),
           SizedBox(
             width: 20,
           ),
@@ -374,7 +397,7 @@ class _NewsDetailsPageState extends State<NewsDetailsPage> {
             Padding(
               padding: EdgeInsets.all(10),
               child: Text(
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                widget.article.description.split('.')[0],
                 style: TextStyle(color: Colors.grey, fontFamily: 'Noto'),
               ),
             ),
@@ -390,15 +413,27 @@ class _NewsDetailsPageState extends State<NewsDetailsPage> {
             Padding(
               padding: EdgeInsets.fromLTRB(10, 10, 0, 5),
               child: Text(
-                  "${DateTime.parse(widget.article.publishedAt).day} - ${DateTime.parse(widget.article.publishedAt).month} - ${DateTime.parse(widget.article.publishedAt).year}",
+                  "${timeDifference} hours ago",
                   style: TextStyle(
                       color: Colors.red, fontFamily: 'Noto', fontSize: 18)),
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-              child: Text("${widget.article.content}",
+              child: Text("${widget.article.content.split('.')[0]} .",
                   style: TextStyle(
                       fontSize: 20, color: Colors.black, fontFamily: 'Noto')),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+              child: FlatButton(
+                color: Colors.blueGrey,
+                child: Text("Read More",
+                    style: TextStyle(
+                        fontSize: 20, color: Colors.white, fontFamily: 'Noto')),
+                onPressed: (){
+                  launch(widget.article.url);
+                },
+              ),
             )
           ],
         ),
